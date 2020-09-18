@@ -169,7 +169,10 @@ void VideoDecoderWrapper::OnDecodedFrame(
       if (frame_extra_infos_.empty()) {
         RTC_LOG(LS_WARNING)
             << "Java decoder produced an unexpected frame: " << timestamp_ns;
-        return;
+        //---modify by heqiang--- for hisi decoder avc
+//        return;
+        break;
+        //---modify end
       }
 
       frame_extra_info = frame_extra_infos_.front();

@@ -26,11 +26,14 @@ namespace webrtc {
 
 std::vector<SdpVideoFormat> InternalEncoderFactory::SupportedFormats() {
   std::vector<SdpVideoFormat> supported_codecs;
+  //change by heqiang
+  for (const webrtc::SdpVideoFormat& format : webrtc::SupportedH264Codecs())
+      supported_codecs.push_back(format);
+
   supported_codecs.push_back(SdpVideoFormat(cricket::kVp8CodecName));
   for (const webrtc::SdpVideoFormat& format : webrtc::SupportedVP9Codecs())
     supported_codecs.push_back(format);
-  for (const webrtc::SdpVideoFormat& format : webrtc::SupportedH264Codecs())
-    supported_codecs.push_back(format);
+//change by heqiang
   if (kIsLibaomAv1EncoderSupported)
     supported_codecs.push_back(SdpVideoFormat(cricket::kAv1CodecName));
   return supported_codecs;

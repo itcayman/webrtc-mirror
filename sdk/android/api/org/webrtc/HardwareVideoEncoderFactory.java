@@ -231,7 +231,8 @@ public class HardwareVideoEncoderFactory implements VideoEncoderFactory {
     }
     String name = info.getName();
     // QCOM H264 encoder is supported in KITKAT or later.
-    return (name.startsWith(QCOM_PREFIX) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+    return (name.startsWith(QCOM_PREFIX) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)//
+        || (name.startsWith("OMX.google.")&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         // Exynos H264 encoder is supported in LOLLIPOP or later.
         || (name.startsWith(EXYNOS_PREFIX)
                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
@@ -286,6 +287,6 @@ public class HardwareVideoEncoderFactory implements VideoEncoderFactory {
 
   private boolean isH264HighProfileSupported(MediaCodecInfo info) {
     return enableH264HighProfile && Build.VERSION.SDK_INT > Build.VERSION_CODES.M
-        && info.getName().startsWith(EXYNOS_PREFIX);
+        /* && info.getName().startsWith(EXYNOS_PREFIX) */;
   }
 }

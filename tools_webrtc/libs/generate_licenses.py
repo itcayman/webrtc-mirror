@@ -70,7 +70,9 @@ LIB_TO_LICENSES_DICT = {
     'g722': ['modules/third_party/g722/LICENSE'],
     'ooura': ['common_audio/third_party/ooura/LICENSE'],
     'spl_sqrt_floor': ['common_audio/third_party/spl_sqrt_floor/LICENSE'],
-
+    'openh264':['third_party/openh264/src/LICENSE'],
+    'ffmpeg':['third_party/ffmpeg/LICENSE.md'],
+    #top 2 line add openh264 and ffmpeg licence ,add by heqiang
     # TODO(bugs.webrtc.org/1110): Remove this hack. This is not a lib.
     # For some reason it is listed as so in _GetThirdPartyLibraries.
     'android_deps': [],
