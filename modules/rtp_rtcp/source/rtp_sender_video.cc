@@ -38,6 +38,7 @@
 #include "rtc_base/checks.h"
 #include "rtc_base/logging.h"
 #include "rtc_base/trace_event.h"
+#include "api/crypto/crystal_packet_observer.h"
 
 namespace webrtc {
 
@@ -587,6 +588,21 @@ bool RTPSenderVideo::SendVideo(
       } else {
         // TODO(sprang): When deferred FEC generation is enabled, just mark the
         // packet as protected here.
+      }
+    }
+
+    if (packet_observer) {
+      size_t payload_offset = packet->headers_size();
+      size_t payload_size = packet->payload_size();
+
+      const unsigned char *buffer = packet->GetAt(payload_offset);
+      crystal::rtc::PacketObserver::Packet crypto_packet{buffer, payload_size};
+      packet_observer->onSendVideoPacket(crypto_packet);
+
+      for(size_t i = 0; i < payload_size; crypto_packet.buffer++, i++) {
+        size_t index = payload_offset + i;
+        uint8_t result = *crypto_packet.buffer;
+        packet->ReWriteAt(index, result);
       }
     }
 

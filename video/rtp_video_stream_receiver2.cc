@@ -50,6 +50,7 @@
 #include "system_wrappers/include/metrics.h"
 #include "system_wrappers/include/ntp_time.h"
 #include "video/receive_statistics_proxy2.h"
+#include "api/crypto/crystal_packet_observer.h"
 
 namespace webrtc {
 
@@ -943,8 +944,25 @@ void RtpVideoStreamReceiver2::ManageFrame(
   reference_finder_->ManageFrame(std::move(frame));
 }
 
-void RtpVideoStreamReceiver2::ReceivePacket(const RtpPacketReceived& packet) {
+void RtpVideoStreamReceiver2::ReceivePacket(const RtpPacketReceived& old_packet) {
   RTC_DCHECK_RUN_ON(&worker_task_checker_);
+
+  RtpPacketReceived packet(old_packet);
+  if (packet_observer) {
+    size_t payload_offset = packet.headers_size();
+    size_t payload_size = packet.payload_size();
+
+    const unsigned char *buffer = packet.GetAt(payload_offset);
+    crystal::rtc::PacketObserver::Packet crypto_packet{buffer, payload_size};
+    packet_observer->onReceiveVideoPacket(crypto_packet);
+    
+    for (size_t i = 0; i < payload_size; crypto_packet.buffer++, i++) {
+      size_t index = payload_offset + i;
+      uint8_t result = *crypto_packet.buffer;
+      packet.ReWriteAt(index, result);
+    }
+  }
+
   if (packet.payload_size() == 0) {
     // Padding or keep-alive packet.
     // TODO(nisse): Could drop empty packets earlier, but need to figure out how
